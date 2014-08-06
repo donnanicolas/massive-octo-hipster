@@ -55,6 +55,10 @@ exports.list = function (req, res) {
 	});
 };
 
+/**
+ * Returns the parents of the current process
+ * @param {Function} done The callback
+ */
 getParents = function (done) {
 	getProcess( function (err, results) {
 		if ( err ) { done(err); }
@@ -64,6 +68,7 @@ getParents = function (done) {
 			loop = true,
 			me, last;
 
+		//Find us
 		//Reverse for optimization and splicing
 		for ( var i=results.length - 1; i >= 0; i--) {
 			if ( pid.toString() === results[i].PID.toString() ) {
@@ -74,6 +79,7 @@ getParents = function (done) {
 
 		last = me[0];
 
+		//Find all parent, till the root
 		while (loop) {
 			//A safer way would be to find out the root process and also check that
 			if ( last.PID.toString() === "1" ) { loop = false; }
@@ -111,21 +117,21 @@ exports.kill = function (req, res) {
 	getParents( function (err, parents) {
 		if ( err ) { return res.json(500, { status: 500, err: err }); }
 
-		console.log(parents);
-
+		//If it's me or any parent, finish
 		if ( pid === process.pid || parents.indexOf(pid.toString()) > -1 ) { return res.json(400, { status: 400, err:'Can\'t kill self nor parent' }); }
 
 		try {
 			process.kill(pid);
 			return res.json(200, { status: 200, ok: 1});
 		} catch (e) {
+			//The main error could be that the process could not be found.
 			return res.json(500, { status: 500, err: e ? e.toString() : 'Couldn\'t kill process with pid: ' + pid} );
 		}
 	});
 };
 
 /**
- * Runs renice on the pid
+ * Runs renice on the pid. May need sudo powers
  * @method POST
  * @route /renice
  * @param {Integer} pid The pid of the process
@@ -157,6 +163,7 @@ exports.run = function (req, res) {
 	var ignore = config.run.ignore,
 		run = true;
 
+	//Some safety
 	ignore.forEach( function (i) {
 		var r = new RegExp(i, 'i');
 
