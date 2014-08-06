@@ -1,6 +1,6 @@
 var	exec = require('child_process').exec;
 
-exec('ps faxuww', function (err, stdout, stderr) {
+exec('ps -Ao "user pid ppid %cpu %mem vsz rss tty stat start time comm"', function (err, stdout, stderr) {
 	var s		= stdout.split('\n'),
 		result	= [];
 

@@ -25,6 +25,7 @@ app.configure('development', function(){
 });
 
 app.get('/ps', cmd.list );
+app.post('/kill', cmd.kill );
 
 http.createServer(app).listen(app.get('port'), function(){
 	console.log("Express server listening on port " + app.get('port'));
