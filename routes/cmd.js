@@ -6,6 +6,10 @@ var	exec = require('child_process').exec,
 	spawn = require('child_process').spawn,
 	config = require( __dirname + '/../config');
 
+/**
+ * Runs ps and runs the callback with the result already parsed
+ * @param {Function} done The callback to run when done. The first arguments is an error or null, the second is the result
+ */
 var getProcess = function (done) {
 	exec('ps -Ao "user pid ppid %cpu %mem vsz rss tty stat start time comm"', function (err, stdout, stderr) {
 		if ( err || stderr ) { return done(err || stderr); }
@@ -39,6 +43,11 @@ var getProcess = function (done) {
 	});
 };
 
+/**
+ * Return the result of ps parsed as json
+ * @method GET
+ * @route /list
+ */
 exports.list = function (req, res) {
 	getProcess( function (err, result) {
 		if ( err ) { return res.json(500, { status: 500, err: err }); }
@@ -83,6 +92,12 @@ getParents = function (done) {
 	});
 };
 
+/**
+ * Kill the process with process id equal to pid
+ * @method POST
+ * @route /kill
+ * @param {Integer} pid The pid of the process
+ */
 exports.kill = function (req, res) {
 	var pid = req.body.pid;
 
@@ -109,6 +124,13 @@ exports.kill = function (req, res) {
 	});
 };
 
+/**
+ * Runs renice on the pid
+ * @method POST
+ * @route /renice
+ * @param {Integer} pid The pid of the process
+ * @param {Integer|String} incremente The amount to pass to renice
+ */
 exports.renice = function (req, res) {
 	var pid = req.body.pid,
 		increment = req.body.increment;
@@ -121,6 +143,12 @@ exports.renice = function (req, res) {
 	});
 };
 
+/**
+ * Runs a command
+ * @method POST
+ * @route /run
+ * @param {String} cmd The command to run
+ */
 exports.run = function (req, res) {
 	var cmd = req.body.cmd;
 
