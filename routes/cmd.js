@@ -1,8 +1,10 @@
 
 /*
- * GET home page.
+ * Routes.
  */
-var	exec = require('child_process').exec;
+var	exec = require('child_process').exec,
+	spawn = require('child_process').spawn,
+	config = require( __dirname + '/../config');
 
 var getProcess = function (done) {
 	exec('ps -Ao "user pid ppid %cpu %mem vsz rss tty stat start time comm"', function (err, stdout, stderr) {
@@ -105,4 +107,39 @@ exports.kill = function (req, res) {
 			return res.json(500, { status: 500, err: e ? e.toString() : 'Couldn\'t kill process with pid: ' + pid} );
 		}
 	});
+};
+
+exports.renice = function (req, res) {
+	var pid = req.body.pid,
+		increment = req.body.increment;
+
+	if  ( !pid || !increment ) { res.json(400, { status: 400, err: 'No pid and/or increment'}); }
+
+	exec('renice ' + pid + ' ' + increment, function (err, stdout, stderr) {
+		if ( err || stderr ) { return res.json(500, { status: 500, err: stderr || err }); }
+		return res.json(200, { status: 200, ok: 1 });
+	});
+};
+
+exports.run = function (req, res) {
+	var cmd = req.body.cmd;
+
+	if ( !cmd ) { return res.json(400, { status: 400, err: 'No command'}); }
+
+	var ignore = config.run.ignore,
+		run = true;
+
+	ignore.forEach( function (i) {
+		var r = new RegExp(i, 'i');
+
+		if ( r.test(cmd) ) {
+			run = false;
+		}
+	});
+
+	if ( !run ) { return res.json(400, { status: 400, err: 'Command ignored'}); }
+
+	var child = spawn(cmd);
+
+	res.json(200, { status: 200, ok: 1, pid: child.pid });
 };

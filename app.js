@@ -2,7 +2,6 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express'),
 	cmd = require('./routes/cmd'),
 	http = require('http'),
@@ -26,6 +25,8 @@ app.configure('development', function(){
 
 app.get('/ps', cmd.list );
 app.post('/kill', cmd.kill );
+app.post('/renice', cmd.renice );
+app.post('/run', cmd.run );
 
 http.createServer(app).listen(app.get('port'), function(){
 	console.log("Express server listening on port " + app.get('port'));
