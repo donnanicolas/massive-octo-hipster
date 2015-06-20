@@ -24,6 +24,7 @@ app.configure('development', function(){
 });
 
 app.get('/ps', cmd.list );
+app.get('/users', cmd.users );
 app.post('/kill', cmd.kill );
 app.post('/renice', cmd.renice );
 app.post('/run', cmd.run );

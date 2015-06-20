@@ -1,5 +1,5 @@
 # massive-octo-hipster
-El nombre del repositorio es fue generad por github.
+El nombre del repositorio es fue generado por github.
 
 Esta aplicación es un trabajo para la materia Monitoreo y Gestión de Redes de la carrera de Ingeniería en Infomática de la Universidad de Mendoza.
 Bajo ningún concepto se debe utilizar esta aplicación en producción, ya que puede generar grandes problemas en un servidor al matar procesos, repriorizarlos o crear nuevos.
@@ -23,7 +23,7 @@ Luego simplemente hay que correrlo
 
 
 # Rutas
-La aplicación cuenta con 4 rutas
+La aplicación cuenta con 5 rutas
 
 ## GET /ps
 La misma devuelve el resultado de:
@@ -32,6 +32,9 @@ La misma devuelve el resultado de:
 
 Se utiliza este comando en lugar de **ps faxu** por las inconsistencias de la opción *f* en distintos entornos.
 El resultado ha sido parseado y pasado a json.
+
+## GET /users
+Devuelve los usuarios que están corriendo procesos en el sistema
 
 ## POST /renice
 Esta ruta simplemente corre el comando **renice**. Recibe como argumento *increment* y *pid*. Siendo *pid* el id del proceso y *increment* el valor a incrementar.
